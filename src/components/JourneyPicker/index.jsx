@@ -2,16 +2,38 @@ import React, { useEffect, useState } from 'react';
 import mapImage from './img/map.svg';
 import './style.css';
 
+
+const CityOptions = ({cities}) => {
+    return (
+    <>
+    <option value="">Vyberte</option>
+    {
+      cities.map(
+        city => <option key={city.code} value={city.code}>{city.name}</option>     
+         )
+    }
+    </>
+  )
+};
+
 export const JourneyPicker = ({ onJourneyChange }) => {
 const [fromCity,setFromCity]= useState('');
 const [toCity, setToCity]= useState('');
 const [date, setDate] = useState('');
+const [cities, setCities]= useState([]);
+
+useEffect (
+  ()=> {
+    fetch('https://leviexpress-backend.herokuapp.com/api/cities')
+    .then(response => response.json())
+    .then(json => setCities(json.data))
+  },
+  []
+)
 
 const handleSubmit = (event) => {
   event.preventDefault();
-  console.log(fromCity);
-  console.log(toCity);
-  console.log(date);
+  console.log(fromCity, toCity, date);
 }
 
 const handleChangeFromCity = (event) => {
@@ -23,6 +45,8 @@ const handleChangeToCity = (event) => {
 const handleChangeDate = (event) => {
   setDate(event.target.value);
 }
+
+
   return (
   <div className="journey-picker container">
     <h2 className="journey-picker__head">Kam chcete jet?</h2>
@@ -31,23 +55,13 @@ const handleChangeDate = (event) => {
         <label>
           <div className="journey-picker__label">Odkud:</div>
           <select onChange={handleChangeFromCity}>
-            <option value={fromCity}>Vyberte</option>
-            <option value="mesto01">Město 01</option>
-            <option value="mesto02">Město 02</option>
-            <option value="mesto03">Město 03</option>
-            <option value="mesto04">Město 04</option>
-            <option value="mesto05">Město 05</option>
+          <CityOptions cities={cities}/>
           </select>
         </label>
         <label>
           <div className="journey-picker__label">Kam:</div>
           <select onChange={handleChangeToCity}>
-            <option value={toCity}>Vyberte</option>
-            <option value="mesto01">Město 01</option>
-            <option value="mesto02">Město 02</option>
-            <option value="mesto03">Město 03</option>
-            <option value="mesto04">Město 04</option>
-            <option value="mesto05">Město 05</option>
+          <CityOptions cities={cities}/>
           </select>
         </label>
         <label>
@@ -74,5 +88,7 @@ const handleChangeDate = (event) => {
     </div>
   </div>
 );
+
+
 
 }
